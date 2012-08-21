@@ -1,0 +1,7 @@
+@PREFIX@/lib/rpm-installer/librpm-util.a
+@PREFIX@/bin/rpm-backend
+@PREFIX@/bin/install_rpm_package.sh
+@PREFIX@/bin/uninstall_rpm_package.sh
+@PREFIX@/bin/upgrade_rpm_package.sh
+@PREFIX@/bin/query_rpm_package.sh
+@PREFIX@/usr/share/data
