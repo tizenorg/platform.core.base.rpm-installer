@@ -221,6 +221,9 @@ int main(int argc, char *argv[])
 		pkgmgr_installer_free(pi);
 		pi = NULL;
 	}
+	if(!ret_val)
+		sync();
+
 	return ret_val;
 
  ERROR:

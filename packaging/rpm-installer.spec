@@ -1,6 +1,6 @@
 Name:       rpm-installer
 Summary:    Native rpm installer
-Version:    0.1.11
+Version:    0.1.12
 Release:    1
 Group:      System/Libraries
 License:    Apache License, Version 2.0
