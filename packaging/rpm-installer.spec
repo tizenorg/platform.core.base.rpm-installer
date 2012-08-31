@@ -28,6 +28,7 @@ BuildRequires:  pkgconfig(evas)
 BuildRequires:  pkgconfig(ecore)
 BuildRequires:  pkgconfig(edje)
 BuildRequires:  gettext-tools
+Requires:  busybox-symlinks-cpio
 
 %description
 Native rpm installer
