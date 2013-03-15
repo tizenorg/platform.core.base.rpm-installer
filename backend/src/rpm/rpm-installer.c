@@ -282,6 +282,54 @@ FINISH_OFF:
 	return NULL;
 }
 
+static GList * __rpm_move_dir_list()
+{
+	GList *dir_list = NULL;
+	GList *list = NULL;
+	app2ext_dir_details* dir_detail = NULL;
+	int i;
+	char pkg_ro_content_rpm[3][5] = { "bin", "res", };
+
+
+	for (i=0; i<3; i++) {
+		dir_detail = (app2ext_dir_details*) calloc(1, sizeof(app2ext_dir_details));
+		if (dir_detail == NULL) {
+			printf("\nMemory allocation failed\n");
+			goto FINISH_OFF;
+		}
+		dir_detail->name = (char*) calloc(1, sizeof(char)*(strlen(pkg_ro_content_rpm[i])+2));
+		if (dir_detail->name == NULL) {
+			printf("\nMemory allocation failed\n");
+			free(dir_detail);
+			goto FINISH_OFF;
+		}
+		snprintf(dir_detail->name, (strlen(pkg_ro_content_rpm[i])+1), "%s", pkg_ro_content_rpm[i]);
+		dir_detail->type = APP2EXT_DIR_RO;
+		dir_list = g_list_append(dir_list, dir_detail);
+	}
+	if (dir_list) {
+		list = g_list_first(dir_list);
+		while (list) {
+			dir_detail = (app2ext_dir_details *)list->data;
+			list = g_list_next(list);
+		}
+	}
+	return dir_list;
+FINISH_OFF:
+	if (dir_list) {
+		list = g_list_first(dir_list);
+		while (list) {
+			dir_detail = (app2ext_dir_details *)list->data;
+			if (dir_detail && dir_detail->name) {
+				free(dir_detail->name);
+			}
+			list = g_list_next(list);
+		}
+		g_list_free(dir_list);
+	}
+	return NULL;
+}
+
 int _rpm_uninstall_pkg(char *pkgid)
 {
 	int ret = 0;
@@ -765,7 +813,7 @@ int _rpm_move_pkg(char *pkgid, int move_type)
 
 	hdl = app2ext_init(APP2EXT_SD_CARD);
 	if ((hdl != NULL) && (hdl->interface.move != NULL)){
-		dir_list = __rpm_populate_dir_list();
+		dir_list = __rpm_move_dir_list();
 		if (dir_list == NULL) {
 			_d_msg(DEBUG_ERR, "\nError in populating the directory list\n");
 			return RPM_INSTALLER_ERR_RPM_SCRIPT_WRONG_ARGS;

@@ -42,6 +42,8 @@
 #define VCONF_RPM_INSTALLER_LAST_REQUESTINFO_OPTIONS \
 	VCONF_RPM_INSTALLER"/requestinfo/options"
 
+#define ERR_RETURN_LEN 32
+
 extern pkgmgr_installer *pi;
 extern char *gpkgname;
 
@@ -161,17 +163,25 @@ void _ri_save_last_input_info(char *pkgid, int reqcommand, int options)
 void _ri_broadcast_status_notification(char *pkgid, char *key, char *val)
 {
 	char *pkgid_tmp = NULL;
+	char buf[ERR_RETURN_LEN] = {'\0'};
+	int ret_val = 0;
 
 	if (gpkgname != NULL)
 		pkgid_tmp = gpkgname;
 	else
 		pkgid_tmp = pkgid;
 
-	_d_msg(DEBUG_INFO, "pkgid = %s, key = %s, val = %s\n",
-	       pkgid_tmp, key, val);
+	ret_val = _ri_string_to_error_no(val);
+	_d_msg(DEBUG_INFO, "pkgid = %s, key = %s, val = %s, ret_val = %d\n", pkgid_tmp, key, val, ret_val);
 
-	if (pi != NULL)
-		pkgmgr_installer_send_signal(pi, PKGTYPE, pkgid_tmp, key, val);
-	else
-		_d_msg(DEBUG_ERR, "Failure in sending broadcast message\n");
+	if (ret_val == RPM_INSTALLER_ERR_UNKNOWN){
+		if (pi != NULL)
+			pkgmgr_installer_send_signal(pi, PKGTYPE, pkgid_tmp, key, val);
+		else
+			_d_msg(DEBUG_ERR, "Failure in sending broadcast message\n");
+	}
+	else{
+		snprintf(buf, ERR_RETURN_LEN - 1, "%d", ret_val);
+		pkgmgr_installer_send_signal(pi, PKGTYPE, pkgid_tmp, key, buf);
+	}
 }
