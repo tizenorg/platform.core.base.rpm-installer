@@ -31,7 +31,7 @@ BuildRequires:  pkgconfig(evas)
 BuildRequires:  pkgconfig(ecore)
 BuildRequires:  pkgconfig(edje)
 BuildRequires:  gettext-tools
-Requires:  /bin/cpio
+Requires:  cpio
 
 %description
 Native rpm installer
