@@ -5,6 +5,7 @@ Release:    2
 Group:      System/Libraries
 License:    Apache License, Version 2.0
 Source0:    %{name}-%{version}.tar.gz
+Source1001: 	rpm-installer.manifest
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  cmake
@@ -38,6 +39,7 @@ Native rpm installer
 
 %prep
 %setup -q
+cp %{SOURCE1001} .
 
 %build
 CFLAGS+=" -fpic"
@@ -64,7 +66,7 @@ vconftool set -t string db/private/rpm-installer/requestinfo/pkgname ""
 vconftool set -t int db/private/rpm-installer/requestinfo/options "0"
 
 %files
-%manifest rpm-installer.manifest
+%manifest %{name}.manifest
 %attr(0700,-,-) /usr/bin/rpm-backend
 %attr(0700,-,-) /usr/bin/install_rpm_package.sh
 %attr(0755,-,-) /usr/bin/query_rpm_package.sh
