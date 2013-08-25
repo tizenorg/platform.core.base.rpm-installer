@@ -1,0 +1,9 @@
+* Sun Aug 25 2013 Chengwei Yang <chengwei.yang@intel.com> accepted/tizen/20130710.221501@cefe683
+- Merge "resetting manifest requested domain to floor" into tizen
+- resetting manifest requested domain to floor
+- resetting manifest requested domain to floor
+- Fix wrong runtime dependence.
+- merge with master
+- Tizen 2.1 base
+- Initial empty repository
+
