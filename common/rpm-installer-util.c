@@ -135,13 +135,13 @@ void _print_msg(int type, int exetype, char *format, ...)
 
 	switch (type) {
 	case DEBUG_ERR:
-		LOG(LOG_ERROR, LOG_TAG, tbuffer);
+		LOG(LOG_ERROR, LOG_TAG, "%s", tbuffer);
 		break;
 	case DEBUG_RESULT:
-		LOG(LOG_WARN, LOG_TAG, tbuffer);
+		LOG(LOG_WARN, LOG_TAG, "%s", tbuffer);
 		break;
 	case DEBUG_INFO:
-		LOG(LOG_DEBUG, LOG_TAG, tbuffer);
+		LOG(LOG_DEBUG, LOG_TAG, "%s", tbuffer);
 	default:
 		break;
 	}

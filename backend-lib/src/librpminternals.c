@@ -59,13 +59,13 @@ void _librpm_print_msg(int type, int exetype, char *format, ...)
 
 	switch (type) {
 	case DEBUG_ERR:
-		LOG(LOG_ERROR, LOCAL_LOG_TAG, tbuffer);
+		LOG(LOG_ERROR, LOCAL_LOG_TAG, "%s", tbuffer);
 		break;
 	case DEBUG_RESULT:
-		LOG(LOG_WARN, LOCAL_LOG_TAG, tbuffer);
+		LOG(LOG_WARN, LOCAL_LOG_TAG, "%s", tbuffer);
 		break;
 	case DEBUG_INFO:
-		LOG(LOG_DEBUG, LOCAL_LOG_TAG, tbuffer);
+		LOG(LOG_DEBUG, LOCAL_LOG_TAG, "%s", tbuffer);
 	default:
 		break;
 	}
