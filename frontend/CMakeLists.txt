@@ -22,7 +22,7 @@ FOREACH(flag ${libpkgs_CFLAGS})
 	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")
 ENDFOREACH(flag)
 
-pkg_check_modules(STATUS pkgmgr-installer-status-broadcast-server pkgmgr pkgmgr-installer pkgmgr-parser libxml-2.0 app2sd pkgmgr-info)
+pkg_check_modules(STATUS pkgmgr-installer-status-broadcast-server pkgmgr pkgmgr-installer pkgmgr-parser libxml-2.0 app2sd pkgmgr-info libtzplatform-config)
 link_directories (${STATUS_LIBRARY_DIRS})
 include_directories (${STATUS_INCLUDE_DIRS})
 

@@ -5,7 +5,7 @@ Summary:    Native rpm installer
 Version:    0.1.25
 Release:    0
 Group:      System/Libraries
-License:    Apache License, Version 2.0
+License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 Source1001: rpm-installer.manifest
 Requires(post): /sbin/ldconfig
@@ -33,6 +33,7 @@ BuildRequires:  pkgconfig(appcore-efl)
 BuildRequires:  pkgconfig(evas)
 BuildRequires:  pkgconfig(ecore)
 BuildRequires:  pkgconfig(edje)
+BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  gettext-tools
 %if %{with x}
 BuildRequires: pkgconfig(ecore-x)
@@ -61,10 +62,10 @@ rm -rf %{buildroot}
 %post
 mkdir -p /usr/etc/package-manager/backend
 mkdir -p /usr/etc/package-manager/backendlib
-ln -sf /usr/bin/rpm-backend /usr/etc/package-manager/backend/rpm
+ln -sf %{_bindir}/rpm-backend /usr/etc/package-manager/backend/rpm
 ln -sf /usr/lib/libnativerpm.so /usr/etc/package-manager/backendlib/librpm.so
 
-chmod 700 /usr/bin/rpm-backend
+chmod 700 %{_bindir}/rpm-backend
 
 vconftool set -t int db/private/rpm-installer/state "0"
 vconftool set -t int db/private/rpm-installer/stateinfo "0"
@@ -74,14 +75,14 @@ vconftool set -t int db/private/rpm-installer/requestinfo/options "0"
 
 %files
 %manifest %{name}.manifest
-%attr(0700,-,-) /usr/bin/rpm-backend
-%attr(0700,-,-) /usr/bin/install_rpm_package.sh
-%attr(0755,-,-) /usr/bin/query_rpm_package.sh
-%attr(0700,-,-) /usr/bin/uninstall_rpm_package.sh
-%attr(0700,-,-) /usr/bin/upgrade_rpm_package.sh
-%attr(0644,-,-) /usr/share/locale/en_GB/LC_MESSAGES/rpm-installer.mo
-%attr(0644,-,-) /usr/share/locale/ja_JP/LC_MESSAGES/rpm-installer.mo
-%attr(0644,-,-) /usr/share/locale/zh_CN/LC_MESSAGES/rpm-installer.mo
-%attr(0644,-,-) /usr/share/locale/en_US/LC_MESSAGES/rpm-installer.mo
-%attr(0644,-,-) /usr/share/locale/ko_KR/LC_MESSAGES/rpm-installer.mo
+%attr(0700,-,-) %{_bindir}/rpm-backend
+%attr(0700,-,-) %{_bindir}/install_rpm_package.sh
+%attr(0755,-,-) %{_bindir}/query_rpm_package.sh
+%attr(0700,-,-) %{_bindir}/uninstall_rpm_package.sh
+%attr(0700,-,-) %{_bindir}/upgrade_rpm_package.sh
+%attr(0644,-,-) %lang(en_GB) /usr/share/locale/en_GB/LC_MESSAGES/rpm-installer.mo
+%attr(0644,-,-) %lang(ja) /usr/share/locale/ja_JP/LC_MESSAGES/rpm-installer.mo
+%attr(0644,-,-) %lang(zh) /usr/share/locale/zh_CN/LC_MESSAGES/rpm-installer.mo
+%attr(0644,-,-) %lang(en_US) /usr/share/locale/en_US/LC_MESSAGES/rpm-installer.mo
+%attr(0644,-,-) %lang(ko) /usr/share/locale/ko_KR/LC_MESSAGES/rpm-installer.mo
 %attr(0644,-,-) /usr/lib/libnativerpm.so
