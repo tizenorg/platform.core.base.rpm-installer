@@ -41,6 +41,9 @@
 #include <rpmts.h>
 #include <rpmdb.h>
 
+/* For multi-user support */
+#include <tzplatform_config.h>
+
 /* SLP include files */
 #include "rpm-installer.h"
 #include "rpm-installer-util.h"
@@ -48,6 +51,7 @@
 
 #define QUERY_PACKAGE		"/usr/bin/query_rpm_package.sh"
 #define RPM_PKG_INFO		"/var/rpmpkg.info"
+#define USER_APP_FOLDER		tzplatform_getenv(TZ_USER_APP)
 
 struct pkgfile_info_t {
 	char *pkg_filename;
@@ -562,9 +566,12 @@ int _rpm_installer_clear_private_data(char *pkgid)
 {
 	if (pkgid == NULL)
 		return RPM_INSTALLER_ERR_WRONG_PARAM;
+
 	char dir_path[256] = { '\0' };
 	int ret = -1;
-	snprintf(dir_path, 255, "/opt/usr/apps/%s/data/", pkgid);
+
+	snprintf(dir_path, 255, "%s/%s/data/", USER_APP_FOLDER, pkgid);
 	ret = __ri_recursive_delete_dir(dir_path);
+
 	return ret;
 }

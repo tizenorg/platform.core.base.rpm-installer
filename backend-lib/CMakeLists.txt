@@ -10,7 +10,7 @@ set(CMAKE_SKIP_BUILD_RPATH true)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/inc ${CMAKE_CURRENT_SOURCE_DIR}/inc )
 
 INCLUDE(FindPkgConfig)
-pkg_check_modules(pkgs REQUIRED dbus-glib-1 pkgmgr-types vconf)
+pkg_check_modules(pkgs REQUIRED dbus-glib-1 pkgmgr-types vconf libtzplatform-config)
 #pkg_check_modules(pkgs REQUIRED pkgmgr-installer-status-broadcast-server security-server vconf sqlite3 dbus-glib-1 glib-2.0 db-util )
 
 FOREACH(flag ${pkgs_CFLAGS})

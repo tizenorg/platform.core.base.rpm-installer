@@ -32,9 +32,13 @@
 #include <rpmdb.h>
 #include <vconf.h>
 
+/* For multi-user support */
+#include <tzplatform_config.h>
+
 #include "librpminternals.h"
 
-#define BASEDIR						"/opt/share"
+#define BASEDIR						tzplatform_getenv(TZ_SYS_SHARE)
+#define USER_APP_FOLDER				tzplatform_getenv(TZ_USER_APP)
 #define BUFFSIZE						256
 
 void pkg_native_plugin_on_unload(void)
@@ -103,7 +107,7 @@ int pkg_plugin_get_app_detail_info(const char *pkgid,
 	}
 
 	/*get data_size*/
-	snprintf(dirname, BUFFSIZE-1, "/opt/usr/apps/%s/data", pkgid);
+	snprintf(dirname, BUFFSIZE-1, "%s/%s/data", USER_APP_FOLDER, pkgid);
 	data_size = _librpm_calculate_dir_size(dirname);
 	if (data_size < 0) {
 		_librpm_print(DEBUG_ERR,
@@ -172,8 +176,8 @@ int pkg_plugin_get_app_detail_info_from_package(const char *pkg_path,
 	}
 
 	/*get data_size. If pkg is not installed it will be 0*/
-	snprintf(dirname, BUFFSIZE-1, "/opt/usr/apps/%s/data",
-				pkg_detail_info->pkgid);
+	snprintf(dirname, BUFFSIZE-1, "%s/%s/data",
+				USER_APP_FOLDER, pkg_detail_info->pkgid);
 
         data_size = _librpm_calculate_dir_size(dirname);
         if (data_size < 0) {
