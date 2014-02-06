@@ -1,11 +1,13 @@
+%bcond_with x
+
 Name:       rpm-installer
 Summary:    Native rpm installer
 Version:    0.1.25
-Release:    2
+Release:    0
 Group:      System/Libraries
 License:    Apache License, Version 2.0
 Source0:    %{name}-%{version}.tar.gz
-Source1001: 	rpm-installer.manifest
+Source1001: rpm-installer.manifest
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  cmake
@@ -22,7 +24,7 @@ BuildRequires:  pkgconfig(pkgmgr-types)
 BuildRequires:  pkgconfig(pkgmgr-installer)
 BuildRequires:  pkgconfig(pkgmgr-parser)
 BuildRequires:  pkgconfig(pkgmgr)
-BuildRequires:	pkgconfig(pkgmgr-info)
+BuildRequires:  pkgconfig(pkgmgr-info)
 BuildRequires:  pkgconfig(app2sd)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(security-server)
@@ -32,6 +34,11 @@ BuildRequires:  pkgconfig(evas)
 BuildRequires:  pkgconfig(ecore)
 BuildRequires:  pkgconfig(edje)
 BuildRequires:  gettext-tools
+%if %{with x}
+BuildRequires: pkgconfig(ecore-x)
+%else
+ExclusiveArch:
+%endif
 Requires:  cpio
 
 %description
