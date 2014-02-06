@@ -1,7 +1,9 @@
+%bcond_with x
+
 Name:       rpm-installer
 Summary:    Native rpm installer
 Version:    0.1.25
-Release:    2
+Release:    0
 Group:      System/Libraries
 License:    Apache License, Version 2.0
 Source0:    %{name}-%{version}.tar.gz
@@ -32,6 +34,11 @@ BuildRequires:  pkgconfig(evas)
 BuildRequires:  pkgconfig(ecore)
 BuildRequires:  pkgconfig(edje)
 BuildRequires:  gettext-tools
+%if %{with x}
+BuildRequires: pkgconfig(ecore-x)
+%else
+ExclusiveArch:
+%endif		
 Requires:  cpio
 
 %description
