@@ -30,7 +30,13 @@ pkg_check_modules(COMMCLIENT pkgmgr-installer-client)
 link_directories (${COMMCLIENT_LIBRARY_DIRS})
 include_directories (${COMMCLIENT_INCLUDE_DIRS})
 
-pkg_check_modules(APPCODEEFL appcore-efl evas ecore edje ecore-input ecore-x)
+IF(X11_SUPPORT)
+       SET(WIN_PKG "ecore-x")
+ENDIF(X11_SUPPORT)
+IF(WAYLAND_SUPPORT)
+       SET(WIN_PKG "${WIN_PKG} ecore-wayland")
+ENDIF(WAYLAND_SUPPORT)
+pkg_check_modules(APPCODEEFL appcore-efl evas ecore edje ecore-input ${WIN_PKG})
 link_directories (${APPCODEEFL_LIBRARY_DIRS})
 include_directories (${APPCODEEFL_INCLUDE_DIRS})
 
@@ -39,6 +45,15 @@ link_directories (${SECURITYSERVER_LIBRARY_DIRS})
 include_directories (${SECURITYSERVER_INCLUDE_DIRS})
 
 ## DEFINITIONS
+
+IF(WAYLAND_SUPPORT)
+ ADD_DEFINITIONS("-DHAVE_WAYLAND")
+ENDIF(WAYLAND_SUPPORT)
+
+IF(X11_SUPPORT)
+ ADD_DEFINITIONS("-DHAVE_X11")
+ENDIF(X11_SUPPORT)
+
 ADD_DEFINITIONS("-DAPP_DIR=\"${CMAKE_INSTALL_PREFIX}\"")
 ADD_DEFINITIONS("-DPACKAGE=\"${PROJECT_NAME}\"")
 

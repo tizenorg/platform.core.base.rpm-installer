@@ -1,3 +1,4 @@
+%bcond_with wayland
 %bcond_with x
 
 Name:       rpm-installer
@@ -36,9 +37,10 @@ BuildRequires:  pkgconfig(edje)
 BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  gettext-tools
 %if %{with x}
-BuildRequires: pkgconfig(ecore-x)
-%else
-ExclusiveArch:
+BuildRequires:  pkgconfig(ecore-x)
+%endif
+%if %{with wayland}
+BuildRequires:  pkgconfig(ecore-wayland)
 %endif
 Requires:  cpio
 
@@ -51,7 +53,17 @@ cp %{SOURCE1001} .
 
 %build
 CFLAGS+=" -fpic"
-cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix}
+%cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+%if %{with wayland}
+        -DWAYLAND_SUPPORT=On \
+%else
+        -DWAYLAND_SUPPORT=Off \
+%endif
+%if %{with x}
+        -DX11_SUPPORT=On
+%else
+        -DX11_SUPPORT=Off
+%endif
 
 make %{?jobs:-j%jobs}
 

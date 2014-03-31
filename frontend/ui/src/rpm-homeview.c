@@ -21,8 +21,15 @@
  */
 
 #include <appcore-efl.h>
-#include <Ecore_X.h>
 #include <pthread.h>
+#if HAVE_X11
+#include <Ecore_X.h>
+#endif
+#if HAVE_WAYLAND
+#include <Ecore.h>
+#include <Ecore_Wayland.h>
+#endif
+
 #include "rpm-frontend.h"
 #include "rpm-installer-util.h"
 #include "rpm-homeview.h"
@@ -158,6 +165,7 @@ Eina_Bool _ri_init_appdata(struct appdata *user_data)
 	int x;
 	int y;
 	int count = 0;
+	int ret = 0;
 	user_data->win_main = elm_win_add(NULL, PACKAGE, ELM_WIN_DIALOG_BASIC);
 	if (!user_data->win_main)
 		return EINA_FALSE;
@@ -166,15 +174,20 @@ Eina_Bool _ri_init_appdata(struct appdata *user_data)
 	elm_win_alpha_set(user_data->win_main, EINA_TRUE);
 	elm_win_borderless_set(user_data->win_main, EINA_TRUE);
 	elm_win_raise(user_data->win_main);
+#if HAVE_X11
 	ecore_x_window_geometry_get(ecore_x_window_root_get
-				    (ecore_x_window_focus_get()), &x, &y, &w,
-				    &h);
-	int ret =
-	    ecore_x_window_prop_property_get(ecore_x_window_root_get
-				     (ecore_x_window_focus_get()),
-				     ECORE_X_ATOM_E_ILLUME_ROTATE_ROOT_ANGLE,
-				     ECORE_X_ATOM_CARDINAL, 32,
-				     &prop_data, &count);
+					(ecore_x_window_focus_get()), &x, &y, &w,
+					&h);
+	ret = ecore_x_window_prop_property_get(ecore_x_window_root_get
+					(ecore_x_window_focus_get()),
+					ECORE_X_ATOM_E_ILLUME_ROTATE_ROOT_ANGLE,
+					ECORE_X_ATOM_CARDINAL, 32,
+					&prop_data, &count);
+#elseif HAVE_WAYLAND /* TO_DO_WAYLAND */
+	_d_msg(DEBUG_INFO, "Operation not supported in a pure Wayland\
+		environment. To do: replace the X11 dependant functions with\
+		 Wayland compatible ones.\n");
+#endif
 	if (ret && prop_data)
 		memcpy(&rotation, prop_data, sizeof(int));
 	if (prop_data)
