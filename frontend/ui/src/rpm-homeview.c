@@ -22,10 +22,10 @@
 
 #include <appcore-efl.h>
 #include <pthread.h>
-#if HAVE_X11
+#ifdef HAVE_X11
 #include <Ecore_X.h>
 #endif
-#if HAVE_WAYLAND
+#ifdef HAVE_WAYLAND
 #include <Ecore.h>
 #include <Ecore_Wayland.h>
 #endif
@@ -174,7 +174,7 @@ Eina_Bool _ri_init_appdata(struct appdata *user_data)
 	elm_win_alpha_set(user_data->win_main, EINA_TRUE);
 	elm_win_borderless_set(user_data->win_main, EINA_TRUE);
 	elm_win_raise(user_data->win_main);
-#if HAVE_X11
+#ifdef HAVE_X11
 	ecore_x_window_geometry_get(ecore_x_window_root_get
 					(ecore_x_window_focus_get()), &x, &y, &w,
 					&h);
@@ -183,7 +183,7 @@ Eina_Bool _ri_init_appdata(struct appdata *user_data)
 					ECORE_X_ATOM_E_ILLUME_ROTATE_ROOT_ANGLE,
 					ECORE_X_ATOM_CARDINAL, 32,
 					&prop_data, &count);
-#elseif HAVE_WAYLAND /* TO_DO_WAYLAND */
+#else /* HAVE_WAYLAND */ /* TO_DO_WAYLAND */
 	_d_msg(DEBUG_INFO, "Operation not supported in a pure Wayland\
 		environment. To do: replace the X11 dependant functions with\
 		 Wayland compatible ones.\n");
