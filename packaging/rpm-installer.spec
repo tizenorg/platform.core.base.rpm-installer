@@ -72,10 +72,8 @@ rm -rf %{buildroot}
 %make_install
 
 %post
-mkdir -p /usr/etc/package-manager/backend
-mkdir -p /usr/etc/package-manager/backendlib
-ln -sf %{_bindir}/rpm-backend /usr/etc/package-manager/backend/rpm
-ln -sf /usr/lib/libnativerpm.so /usr/etc/package-manager/backendlib/librpm.so
+ln -sf %{_bindir}/rpm-backend /etc/package-manager/backend/rpm
+ln -sf /usr/lib/libnativerpm.so /etc/package-manager/backendlib/librpm.so
 
 chmod 700 %{_bindir}/rpm-backend
 
