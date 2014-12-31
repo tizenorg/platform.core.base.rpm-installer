@@ -1,14 +1,10 @@
-%bcond_with wayland
-%bcond_with x
-
 Name:       rpm-installer
 Summary:    Native rpm installer
-Version:    0.1.25
-Release:    0
+Version:    0.1.146
+Release:    1
 Group:      System/Libraries
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
-Source1001: rpm-installer.manifest
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  cmake
@@ -25,45 +21,42 @@ BuildRequires:  pkgconfig(pkgmgr-types)
 BuildRequires:  pkgconfig(pkgmgr-installer)
 BuildRequires:  pkgconfig(pkgmgr-parser)
 BuildRequires:  pkgconfig(pkgmgr)
-BuildRequires:  pkgconfig(pkgmgr-info)
+BuildRequires:	pkgconfig(pkgmgr-info)
 BuildRequires:  pkgconfig(app2sd)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(security-server)
-BuildRequires:  pkgconfig(elementary)
-BuildRequires:  pkgconfig(appcore-efl)
-BuildRequires:  pkgconfig(evas)
-BuildRequires:  pkgconfig(ecore)
+BuildRequires:  pkgconfig(cert-svc)
+BuildRequires:  pkgconfig(xmlsec1)
+BuildRequires:  pkgconfig(libxslt)
 BuildRequires:  pkgconfig(edje)
+BuildRequires:	pkgconfig(libprivilege-control)
+BuildRequires:  pkgconfig(capi-appfw-app-manager)
+BuildRequires:  pkgconfig(capi-system-device)
+BuildRequires:	pkgconfig(aul)
+BuildRequires:  pkgconfig(openssl)
+BuildRequires:  pkgconfig(minizip)
 BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  gettext-tools
-%if %{with x}
-BuildRequires:  pkgconfig(ecore-x)
-%endif
-%if %{with wayland}
-BuildRequires:  pkgconfig(ecore-wayland)
-%endif
-Requires:  cpio
+Requires:  /bin/cpio
 
 %description
 Native rpm installer
 
+Requires(post): pkgmgr
+
 %prep
 %setup -q
-cp %{SOURCE1001} .
 
 %build
 CFLAGS+=" -fpic"
-%cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-%if %{with wayland}
-        -DWAYLAND_SUPPORT=On \
-%else
-        -DWAYLAND_SUPPORT=Off \
+
+%if 0%{?tizen_build_binary_release_type_eng}
+export CFLAGS="$CFLAGS -DTIZEN_ENGINEER_MODE"
+export CXXFLAGS="$CXXFLAGS ?DTIZEN_ENGINEER_MODE"
+export FFLAGS="$FFLAGS -DTIZEN_ENGINEER_MODE"
 %endif
-%if %{with x}
-        -DX11_SUPPORT=On
-%else
-        -DX11_SUPPORT=Off
-%endif
+
+cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix}
 
 make %{?jobs:-j%jobs}
 
@@ -71,28 +64,44 @@ make %{?jobs:-j%jobs}
 rm -rf %{buildroot}
 %make_install
 
+mkdir -p %{buildroot}/usr/share/license
+cp LICENSE %{buildroot}/usr/share/license/%{name}
+
 %post
+mkdir -p /usr/etc/package-manager/backend
+mkdir -p /usr/etc/package-manager/backendlib
+mkdir -p /opt/share/packages/.pkgmgr/rpm-installer/
+
+ln -sf %{_bindir}/rpm-backend /etc/package-manager/backend/coretpk
 ln -sf %{_bindir}/rpm-backend /etc/package-manager/backend/rpm
 ln -sf /usr/lib/libnativerpm.so /etc/package-manager/backendlib/librpm.so
+ln -sf /usr/lib/libnativerpm.so /etc/package-manager/backendlib/libcoretpk.so
 
-chmod 700 %{_bindir}/rpm-backend
-
-vconftool set -t int db/private/rpm-installer/state "0"
-vconftool set -t int db/private/rpm-installer/stateinfo "0"
-vconftool set -t int db/private/rpm-installer/requestinfo/command "0"
-vconftool set -t string db/private/rpm-installer/requestinfo/pkgname ""
-vconftool set -t int db/private/rpm-installer/requestinfo/options "0"
+vconftool set -t int db/private/rpm-installer/state "0" -f -s system::vconf_inhouse
+vconftool set -t int db/private/rpm-installer/stateinfo "0" -f -s system::vconf_inhouse
+vconftool set -t int db/private/rpm-installer/requestinfo/command "0" -f -s system::vconf_inhouse
+vconftool set -t string db/private/rpm-installer/requestinfo/pkgname "" -f -s system::vconf_inhouse
+vconftool set -t int db/private/rpm-installer/requestinfo/options "0" -f -s system::vconf_inhouse
 
 %files
-%manifest %{name}.manifest
-%attr(0700,-,-) %{_bindir}/rpm-backend
+%manifest rpm-installer.manifest
+%attr(0755,-,-) %{_bindir}/rpm-backend
 %attr(0700,-,-) %{_bindir}/install_rpm_package.sh
+%attr(0700,-,-) %{_bindir}/install_rpm_package_with_dbpath_ro.sh
+%attr(0700,-,-) %{_bindir}/install_rpm_package_with_dbpath_rw.sh
 %attr(0755,-,-) %{_bindir}/query_rpm_package.sh
 %attr(0700,-,-) %{_bindir}/uninstall_rpm_package.sh
 %attr(0700,-,-) %{_bindir}/upgrade_rpm_package.sh
-%attr(0644,-,-) %lang(en_GB) /usr/share/locale/en_GB/LC_MESSAGES/rpm-installer.mo
-%attr(0644,-,-) %lang(ja) /usr/share/locale/ja_JP/LC_MESSAGES/rpm-installer.mo
-%attr(0644,-,-) %lang(zh) /usr/share/locale/zh_CN/LC_MESSAGES/rpm-installer.mo
-%attr(0644,-,-) %lang(en_US) /usr/share/locale/en_US/LC_MESSAGES/rpm-installer.mo
-%attr(0644,-,-) %lang(ko) /usr/share/locale/ko_KR/LC_MESSAGES/rpm-installer.mo
+%attr(0700,-,-) %{_bindir}/upgrade_rpm_package_with_dbpath_ro.sh
+%attr(0700,-,-) %{_bindir}/upgrade_rpm_package_with_dbpath_rw.sh
+%attr(0700,-,-) %{_bindir}/cpio_rpm_package.sh
+%attr(0700,-,-) %{_bindir}/cpio_rpm_package_update_xml.sh
+%attr(0755,-,-) %{_bindir}/coretpk_ro_xml_converter.sh
+%attr(0755,-,-) %{_bindir}/coretpk_rw_xml_converter.sh
+%attr(0700,-,-) %{_bindir}/coretpk_category_converter.sh
+%attr(0700,-,-) %{_bindir}/rpm_update_xml.sh
+%attr(0744,-,-) /usr/etc/rpm-installer-config.ini
+%attr(0744,-,-) /usr/etc/coretpk-installer-config.ini
 %attr(0644,-,-) /usr/lib/libnativerpm.so
+%attr(0755,-,-) /opt/share/packages/.pkgmgr/rpm-installer/rpm_installer_deactvation_list.txt
+/usr/share/license/%{name}

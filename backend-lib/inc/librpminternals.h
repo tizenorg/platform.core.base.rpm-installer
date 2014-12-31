@@ -28,6 +28,10 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif				/* __cplusplus */
+
 #define API __attribute__ ((visibility("default")))
 #define DEBUG_ERR	0x0001
 #define DEBUG_INFO	0x0002
@@ -40,18 +44,12 @@
 #define LIKELY(expr) __builtin_expect((expr), 1)
 #define UNLIKELY(expr) __builtin_expect((expr), 0)
 
-void _librpm_print_msg(int type, int exetype, char *format, ...);
-#define _librpm_print(type, fmtstr, args...) { \
-_librpm_print_msg(type, LIBRPM_LOG, "%s():%d: " fmtstr, \
-__func__, __LINE__, ##args); \
-}
-
-int _librpm_get_package_header_info(char *pkg_path,
+int _librpm_get_package_header_info(const char *pkg_path,
 			package_manager_pkg_detail_info_t *pkg_detail_info);
-int _librpm_get_installed_package_info(char *pkgid,
+int _librpm_get_installed_package_info(const char *pkgid,
 			package_manager_pkg_detail_info_t *pkg_detail_info);
-int _librpm_app_is_installed(char *pkgid);
-long long _librpm_calculate_dir_size(char *dirname);
+int _librpm_app_is_installed(const char *pkgid);
+long long _librpm_calculate_dir_size(const char *dirname);
 
 #ifdef __cplusplus
 }
