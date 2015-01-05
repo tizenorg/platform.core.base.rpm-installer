@@ -292,7 +292,7 @@ pkginfo *_rpm_installer_get_pkgname_info(const char *pkgid)
 		return NULL;
 	}
 
-	ret = pkgmgrinfo_pkginfo_get_pkginfo(pkgid, &handle);
+	ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkgid, getuid(), &handle);
 	if (ret != PMINFO_R_OK || handle == NULL) {
 		_LOGE("fisrt installation, pkgid=[%s]", pkgid);
 		free(info);
