@@ -490,7 +490,7 @@ static int __check_updated_system_package(const char *pkgid)
 	bool is_system = false;
 	pkgmgrinfo_pkginfo_h pkghandle = NULL;
 
-	ret = pkgmgrinfo_pkginfo_get_pkginfo(pkgid, &pkghandle);
+	ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkgid, getuid(), &pkghandle);
 	retvm_if(ret < 0, -1, "pkgmgrinfo_pkginfo_get_pkginfo(%s) failed.", pkgid);
 
 	ret = pkgmgrinfo_pkginfo_is_system(pkghandle, &is_system);
@@ -2339,13 +2339,13 @@ int _coretpk_installer_package_upgrade(char *pkgfile, char *pkgid, char *clienti
 	_ri_broadcast_status_notification(pkgid, "coretpk", "start", "update");
 
 	/*terminate running app*/
-	ret = pkgmgrinfo_pkginfo_get_pkginfo(pkgid, &pkghandle);
+	ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkgid, getuid(), &pkghandle);
 	if (ret < 0) {
 		_LOGE("failed to get the pkginfo handle.");
 		ret = RPM_INSTALLER_ERR_PKG_NOT_FOUND;
 		goto err;
 	}
-	pkgmgrinfo_appinfo_get_list(pkghandle, PMINFO_UI_APP, __ri_check_running_app, NULL);
+	pkgmgrinfo_appinfo_get_usr_list(pkghandle, PMINFO_UI_APP, __ri_check_running_app, NULL, getuid());
 	pkgmgrinfo_pkginfo_destroy_pkginfo(pkghandle);
 
     /*remove dir for clean*/
@@ -2441,7 +2441,7 @@ int _coretpk_installer_package_upgrade(char *pkgfile, char *pkgid, char *clienti
 	_ri_broadcast_status_notification(pkgid, "coretpk", "install_percent", "60");
 
 	/*Parse the manifest to get install location and size. If fails, remove manifest info from DB.*/
-	ret = pkgmgr_parser_parse_manifest_for_upgrade(manifest, NULL);
+	ret = pkgmgr_parser_parse_usr_manifest_for_upgrade(manifest, getuid(), NULL);
 	if (ret < 0) {
 		_LOGE("@parsing manifest failed.");
 		ret = RPM_INSTALLER_ERR_INTERNAL;
@@ -2491,7 +2491,6 @@ int _coretpk_installer_package_upgrade(char *pkgfile, char *pkgid, char *clienti
 			_LOGD("_coretpk_installer_verify_privilege_list(PRVMGR_PACKAGE_TYPE_CORE) is ok.");
 		}
 	}
-
 #if 0
 	/*reload smack*/
 	ret = _ri_smack_reload(pkgid, REQUEST_TYPE_UPGRADE);

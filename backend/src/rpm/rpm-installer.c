@@ -3387,7 +3387,6 @@ int _rpm_uninstall_pkg_with_dbpath(const char *pkgid, bool is_system)
 		}
 		goto end;
 	} else {
-		// del manifest
 		memset(buff, '\0', BUF_SIZE);
 		snprintf(buff, BUF_SIZE, "%s/%s.xml", OPT_SHARE_PACKAGES, pkgid);
 
@@ -3397,8 +3396,8 @@ int _rpm_uninstall_pkg_with_dbpath(const char *pkgid, bool is_system)
 			_LOGE("pkgmgr_parser_parse_manifest_for_uninstallation() failed, pkgid=[%s]", pkgid);
 		}
 
+		// del manifest
 		(void)remove(buff);
-
 	}
 
 	// execute privilege APIs
