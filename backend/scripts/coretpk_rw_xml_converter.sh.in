@@ -2,7 +2,8 @@
 INPUT=$1
 OUTPUT=$2
 PKGID=$3
-CLIENTID=$4
+USRAPPDIR=$4
+CLIENTID=$5
 INSTALLLOCATION=0
 
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
@@ -29,13 +30,13 @@ then
 		if [ $INSTALLLOCATION -eq 1 ]
 		then
 			/bin/sed	-e	"s#<icon>#<icon>/opt/usr/apps/$PKGID/shared/res/#g" \
-						-e	"s#exec=\"#exec=\"/opt/usr/apps/$PKGID/bin/#g" \
+						-e	"s#exec=\"#exec=\"$USRAPPDIR/$PKGID/bin/#g" \
 						-e "/<feature.*>/ d" -e "/<feature /,/<\/feature>/ d" \
 						-e	"s#\(<manifest[^>]*\)>#\1 storeclient-id=\"$CLIENTID\">#" \
 						-e "s#package=\"#type=\"coretpk\" package=\"#g" $INPUT > $OUTPUT
 		else
 			/bin/sed	-e	"s#<icon>#<icon>/opt/usr/apps/$PKGID/shared/res/#g" \
-						-e	"s#exec=\"#exec=\"/opt/usr/apps/$PKGID/bin/#g" \
+						-e	"s#exec=\"#exec=\"$USRAPPDIR/$PKGID/bin/#g" \
 						-e "/<feature.*>/ d" -e "/<feature /,/<\/feature>/ d" \
 						-e "s#\(<manifest[^>]*\)>#\1 install-location=\"internal-only\">#" \
 						-e	"s#\(<manifest[^>]*\)>#\1 storeclient-id=\"$CLIENTID\">#" \
@@ -45,13 +46,13 @@ then
 		if [ $INSTALLLOCATION -eq 1 ]
 		then
 			/bin/sed	-e	"s#<icon>#<icon>/opt/usr/apps/$PKGID/shared/res/#g" \
-						-e	"s#exec=\"#exec=\"/opt/usr/apps/$PKGID/bin/#g" \
+						-e	"s#exec=\"#exec=\"$USRAPPDIR/$PKGID/bin/#g" \
 						-e "/<feature.*>/ d" -e "/<feature /,/<\/feature>/ d" \
 						-e	"s#\(<manifest[^>]*\)>#\1 storeclient-id=\"$CLIENTID\">#" \
 						-e "s#package=\"#type=\"coretpk\" package=\"#g" $INPUT > $OUTPUT
 		else
 			/bin/sed	-e	"s#<icon>#<icon>/opt/usr/apps/$PKGID/shared/res/#g" \
-						-e	"s#exec=\"#exec=\"/opt/usr/apps/$PKGID/bin/#g" \
+						-e	"s#exec=\"#exec=\"$USRAPPDIR/$PKGID/bin/#g" \
 						-e "/<feature.*>/ d" -e "/<feature /,/<\/feature>/ d" \
 						-e "s#\(<manifest[^>]*\)>#\1 install-location=\"auto\">#" \
 						-e	"s#\(<manifest[^>]*\)>#\1 storeclient-id=\"$CLIENTID\">#" \
@@ -65,11 +66,11 @@ else
 		then
 			/bin/sed	-e	"s#<icon>#<icon>/opt/usr/apps/$PKGID/shared/res/#g" \
 						-e "/<feature.*>/ d" -e "/<feature /,/<\/feature>/ d" \
-						-e	"s#exec=\"#exec=\"/opt/usr/apps/$PKGID/bin/#g" \
+						-e	"s#exec=\"#exec=\"$USRAPPDIR/$PKGID/bin/#g" \
 						-e "s#package=\"#type=\"coretpk\" package=\"#g" $INPUT > $OUTPUT
 		else
 			/bin/sed	-e	"s#<icon>#<icon>/opt/usr/apps/$PKGID/shared/res/#g" \
-						-e	"s#exec=\"#exec=\"/opt/usr/apps/$PKGID/bin/#g" \
+						-e	"s#exec=\"#exec=\"$USRAPPDIR/$PKGID/bin/#g" \
 						-e "/<feature.*>/ d" -e "/<feature /,/<\/feature>/ d" \
 						-e "s#\(<manifest[^>]*\)>#\1 install-location=\"internal-only\">#" \
 						-e "s#package=\"#type=\"coretpk\" package=\"#g" $INPUT > $OUTPUT
@@ -79,11 +80,11 @@ else
 		then
 			/bin/sed	-e	"s#<icon>#<icon>/opt/usr/apps/$PKGID/shared/res/#g" \
 						-e "/<feature.*>/ d" -e "/<feature /,/<\/feature>/ d" \
-						-e	"s#exec=\"#exec=\"/opt/usr/apps/$PKGID/bin/#g" \
+						-e	"s#exec=\"#exec=\"$USRAPPDIR/$PKGID/bin/#g" \
 						-e "s#package=\"#type=\"coretpk\" package=\"#g" $INPUT > $OUTPUT
 		else
 			/bin/sed	-e	"s#<icon>#<icon>/opt/usr/apps/$PKGID/shared/res/#g" \
-						-e	"s#exec=\"#exec=\"/opt/usr/apps/$PKGID/bin/#g" \
+						-e	"s#exec=\"#exec=\"$USRAPPDIR/$PKGID/bin/#g" \
 						-e "/<feature.*>/ d" -e "/<feature /,/<\/feature>/ d" \
 						-e "s#\(<manifest[^>]*\)>#\1 install-location=\"auto\">#" \
 						-e "s#package=\"#type=\"coretpk\" package=\"#g" $INPUT > $OUTPUT

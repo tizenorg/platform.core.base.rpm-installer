@@ -1036,7 +1036,7 @@ int _coretpk_installer_convert_manifest(char *manifestfilepath, char *pkgid, cha
 	/*run script*/
 	if (strstr(manifestfilepath, OPT_USR_APPS)) {
 		snprintf(rwmanifest, BUF_SIZE, "%s/%s.xml", OPT_SHARE_PACKAGES, pkgid);
-		const char *rw_xml_argv[] = { CORETPK_RW_XML_CONVERTER, manifestfilepath, rwmanifest, pkgid, clientid, NULL };
+		const char *rw_xml_argv[] = { CORETPK_RW_XML_CONVERTER, manifestfilepath, rwmanifest, pkgid, OPT_USR_APPS, clientid, NULL };
 		ret = _ri_xsystem(rw_xml_argv);
 	} else {
 		snprintf(rwmanifest, BUF_SIZE, "%s/%s.xml", USR_SHARE_PACKAGES, pkgid);

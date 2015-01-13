@@ -540,7 +540,7 @@ int _coretpk_installer_hybrid_convert_manifest(char *manifest, const char* pkgid
 	snprintf(outputxml, BUF_SIZE, "%s/%s", TEMP_XML_DIR, CORETPK_XML);
 	_LOGD("input xml = [%s], out xml = [%s]", manifest, outputxml);
 
-	const char *unzip_argv_rw[] = { CORETPK_RW_XML_CONVERTER, manifest, outputxml, pkgid, NULL, NULL };
+	const char *unzip_argv_rw[] = { CORETPK_RW_XML_CONVERTER, manifest, outputxml, pkgid, OPT_USR_APPS, NULL, NULL };
 	const char *unzip_argv_ro[] = { CORETPK_RO_XML_CONVERTER, manifest, outputxml, pkgid, NULL, NULL };
 
 	if (strstr(manifest, OPT_USR_APPS)) {
