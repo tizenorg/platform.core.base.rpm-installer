@@ -1746,7 +1746,7 @@ int _coretpk_installer_get_group_id(char *pkgid, char **result)
 		goto err;
 	}
 
-	ret = pkgmgrinfo_pkginfo_load_certinfo(pkgid, handle);
+	ret = pkgmgrinfo_pkginfo_load_certinfo(pkgid, handle, getuid());
 	if (ret < 0) {
 		_LOGE("failed to load cert info.");
 		goto err;

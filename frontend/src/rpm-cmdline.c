@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <pkgmgr_installer.h>
 #include <security-server.h>
+#include <tzplatform_config.h>
 #include "rpm-frontend.h"
 #include "rpm-installer-util.h"
 #include "rpm-installer.h"
@@ -40,7 +41,7 @@ ri_frontend_data front_data;
 char scrolllabel[256];
 int move_type;
 #define BUF_SIZE 1024
-#define OTP_USR_APPS "/opt/usr/apps"
+#define OTP_USR_APPS tzplatform_getenv(TZ_USER_APP)
 
 static void __ri_show_usage(char **arg);
 static int __ri_process_request(ri_frontend_cmdline_arg *fdata);

@@ -544,7 +544,7 @@ int _rpm_installer_get_group_id(char *pkgid, char **result)
 		goto err;
 	}
 
-	ret = pkgmgrinfo_pkginfo_load_certinfo(pkgid, handle);
+	ret = pkgmgrinfo_pkginfo_load_certinfo(pkgid, handle, getuid());
 	if (ret < 0) {
 		_LOGE("pkgmgrinfo_pkginfo_load_certinfo(%s) failed.", pkgid);
 		goto err;
@@ -1780,7 +1780,7 @@ void _ri_register_cert(const char *pkgid)
 		}
 	}
 	/* Save the certificates in cert DB*/
-	error = pkgmgrinfo_save_certinfo(pkgid, handle);
+	error = pkgmgrinfo_save_certinfo(pkgid, handle, getuid());
 	if (error != 0) {
 		_LOGE("pkgmgrinfo_save_certinfo failed. Err:%d", error);
 		goto err;
@@ -1795,7 +1795,7 @@ void _ri_unregister_cert(const char *pkgid)
 {
 	int error = 0;
 	/* Delete the certifictes from cert DB*/
-	error = pkgmgrinfo_delete_certinfo(pkgid);
+	error = pkgmgrinfo_delete_usr_certinfo(pkgid, getuid());
 	if (error != 0) {
 		_LOGE("pkgmgrinfo_delete_certinfo failed. Err:%d", error);
 		return;
@@ -3324,11 +3324,6 @@ int _rpm_uninstall_pkg_with_dbpath(const char *pkgid, bool is_system)
 	bool mother_package = false;
 	bool coretpk = false;
 
-	#ifdef APP2EXT_ENABLE
-	app2ext_handle *handle = NULL;
-	pkgmgrinfo_installed_storage location = 1;
-	#endif
-
 	_LOGD("pkgid=[%s], is_system=[%d]", pkgid, is_system);
 
 	snprintf(tizen_manifest, BUF_SIZE, "%s/%s/tizen-manifest.xml", OPT_USR_APPS, pkgid);
@@ -3344,13 +3339,13 @@ int _rpm_uninstall_pkg_with_dbpath(const char *pkgid, bool is_system)
 		_ri_broadcast_status_notification(pkgid, coretpk ? "coretpk" : "rpm", "start", "uninstall");
 
 	// terminate running app
-	ret = pkgmgrinfo_pkginfo_get_pkginfo(pkgid, &pkghandle);
+	ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkgid, getuid(), &pkghandle);
 	if (ret < 0) {
 		_LOGE("pkgmgrinfo_pkginfo_get_pkginfo(%s) failed.", pkgid);
 		ret = RPM_INSTALLER_ERR_PKG_NOT_FOUND;
 		goto end;
 	}
-	pkgmgrinfo_appinfo_get_list(pkghandle, PM_UI_APP, __ri_check_running_app, NULL);
+	pkgmgrinfo_appinfo_get_usr_list(pkghandle, PM_UI_APP, __ri_check_running_app, NULL, getuid());
 
 	// If package is mother package, then uninstall child package
 /*	pkgmgrinfo_pkginfo_is_mother_package(pkghandle, &mother_package);
@@ -3381,11 +3376,6 @@ int _rpm_uninstall_pkg_with_dbpath(const char *pkgid, bool is_system)
 		}
 	}
 
-	// del manifest
-	memset(buff, '\0', BUF_SIZE);
-	snprintf(buff, BUF_SIZE, "%s/%s.xml", OPT_SHARE_PACKAGES, pkgid);
-	(void)remove(buff);
-
 	// check system pkg, if pkg is system pkg, need to update xml on USR_SHARE_PACKAGES
 	if (is_system) {
 		memset(buff, '\0', BUF_SIZE);
@@ -3397,72 +3387,23 @@ int _rpm_uninstall_pkg_with_dbpath(const char *pkgid, bool is_system)
 		}
 		goto end;
 	} else {
-#ifdef APP2EXT_ENABLE
-		ret = pkgmgrinfo_pkginfo_get_pkginfo(pkgid, &pkghandle);
-		if (ret < 0) {
-			_LOGE("failed to get pkginfo handle");
-			ret = RPM_INSTALLER_ERR_PKG_NOT_FOUND;
-			goto end;
-		}
-		ret = pkgmgrinfo_pkginfo_get_installed_storage(pkghandle, &location);
-		if (ret < 0) {
-			_LOGE("failed to get install location\n");
-			pkgmgrinfo_pkginfo_destroy_pkginfo(pkghandle);
-			return RPM_INSTALLER_ERR_INTERNAL;
-		}
-
-		pkgmgrinfo_pkginfo_destroy_pkginfo(pkghandle);
-		if (location == PMINFO_EXTERNAL_STORAGE) {
-			handle = app2ext_init(APP2EXT_SD_CARD);
-			if (handle == NULL) {
-				_LOGE("app2ext init failed\n");
-				return RPM_INSTALLER_ERR_INTERNAL;
-			}
-			if ((&(handle->interface) != NULL) && (handle->interface.pre_uninstall != NULL) && (handle->interface.post_uninstall != NULL) &&
-					(handle->interface.disable != NULL)){
-				ret = handle->interface.disable(pkgid);
-				if (ret != APP2EXT_SUCCESS) {
-					_LOGE("Unmount ret[%d]", ret);
-				}
-				ret = app2ext_get_app_location(pkgid);
-				if (ret == APP2EXT_INTERNAL_MEM){
-					_LOGE("app2xt APP is not in MMC, go internal (%d)\n", ret);
-				}
-				else {
-					ret = handle->interface.pre_uninstall(pkgid);
-					if (ret == APP2EXT_ERROR_MMC_STATUS ) {
-						_LOGE("app2xt MMC is not here, go internal (%d)\n", ret);
-					}else if (ret == APP2EXT_SUCCESS){
-						_LOGE("pre uninstall done, go to internal");
-					}else {
-						_LOGE("app2xt pre uninstall API failed (%d)\n", ret);
-						handle->interface.post_uninstall(pkgid);
-						app2ext_deinit(handle);
-						return RPM_INSTALLER_ERR_INTERNAL;
-					}
-				}
-			}
-		}
-#endif
+		// del manifest
+		memset(buff, '\0', BUF_SIZE);
+		snprintf(buff, BUF_SIZE, "%s/%s.xml", OPT_SHARE_PACKAGES, pkgid);
 
 		// del db info
-		ret = pkgmgr_parser_parse_manifest_for_uninstallation(pkgid, NULL);
+		ret = pkgmgr_parser_parse_usr_manifest_for_uninstallation(buff, getuid(), NULL);
 		if (ret < 0) {
 			_LOGE("pkgmgr_parser_parse_manifest_for_uninstallation() failed, pkgid=[%s]", pkgid);
 		}
 
-#ifdef APP2EXT_ENABLE
-		if ((handle != NULL) && (handle->interface.post_uninstall != NULL)){
-			handle->interface.post_uninstall(pkgid);
-			app2ext_deinit(handle);
-		}
-#endif
+		(void)remove(buff);
 
 	}
 
 	// execute privilege APIs
-	_ri_privilege_revoke_permissions(pkgid);
-	_ri_privilege_unregister_package(pkgid);
+//	_ri_privilege_revoke_permissions(pkgid);
+//	_ri_privilege_unregister_package(pkgid);
 
 	// Unregister cert info
 	_ri_unregister_cert(pkgid);
