@@ -61,6 +61,7 @@
 #include <package-manager.h>
 #include <privilege-control.h>
 #include <app_manager.h>
+#include <app_manager_extension.h>
 #include <aul.h>
 #include <dlfcn.h>
 #define APP2EXT_ENABLE
